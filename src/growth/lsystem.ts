@@ -1,18 +1,20 @@
-import { LSystem, Turtle } from "@rgsoft/turtle";
+import { LSystem } from "@rgsoft/turtle";
 
 export class LSystemGenerator {
 	private lsystem: LSystem;
-	private turtle: Turtle;
 	private sentence: string = "";
 
 	constructor(axiom: string, rules: Record<string, string>) {
-		this.lsystem = new LSystem(axiom, rules);
-		this.turtle = new Turtle();
+		// Преобразуем объект правил в массив строк вида "A->B"
+		const rulesArray = Object.entries(rules).map(
+			([from, to]) => `${from}->${to}`,
+		);
+		this.lsystem = new LSystem(axiom, rulesArray);
 	}
 
 	generate(iterations: number) {
 		this.lsystem.generate(iterations);
-		this.sentence = this.lsystem.getString();
+		this.sentence = this.lsystem.sentence; // вместо .getString()
 		console.log("L-system sentence:", this.sentence);
 	}
 
@@ -38,14 +40,12 @@ export class LSystemGenerator {
 					pos = next;
 					break;
 				case "+":
-					// поворот вокруг Y (вправо)
 					const rad = angle;
 					const newDirX = dir.x * Math.cos(rad) - dir.z * Math.sin(rad);
 					const newDirZ = dir.x * Math.sin(rad) + dir.z * Math.cos(rad);
 					dir = { x: newDirX, y: dir.y, z: newDirZ };
 					break;
 				case "-":
-					// поворот вокруг Y (влево)
 					const radNeg = -angle;
 					const newDirXNeg =
 						dir.x * Math.cos(radNeg) - dir.z * Math.sin(radNeg);
